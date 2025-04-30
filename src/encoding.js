@@ -1,6 +1,28 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
+exports.maskBytes =
+  exports.normalizeText =
+  exports.bitlen =
+  exports.decode =
+  exports.encode =
+  exports.words =
+    void 0;
 const ENGLISH = require('./wordlists/english.json');
+const SPANISH = require('./wordlists/es.json');
+const PORTUGUESE = require('./wordlists/pt.json');
+const CHINESES = require('./wordlists/cns.json');
+const JAPANESE = require('./wordlists/jp.json');
+const LANGS = {
+  en: ENGLISH,
+  es: SPANISH,
+  pt: PORTUGUESE,
+  cn: CHINESES,
+  jp: JAPANESE,
+};
+function words() {
+  return LANGS;
+}
+exports.words = words;
 // Note: this cuts off extra bits from data
 // A 2048 word list is 11 bits per word, so you should pass in a
 // 17 byte Buffer, and the most significant 4 bits are thrown away
@@ -26,9 +48,7 @@ function decode(mnemonic, wordlist = ENGLISH) {
       const index = wordlist.indexOf(word);
       if (index === -1)
         throw new Error(
-          `Unknown Word: ${word}\nWordlist: ${
-            JSON.stringify(wordlist, null, 2).slice(0, 50) + '...'
-          }`,
+          `Unknown Word: ${word}\nWordlist: ${JSON.stringify(wordlist, null, 2).slice(0, 50) + '...'}`,
         );
       return lpad(index.toString(2), '0', wordBitLen);
     })
@@ -79,8 +99,10 @@ function lpad(str, pad, len) {
   return (pad.repeat(len) + str).slice(-1 * len);
 }
 function isCJK(c) {
-  const n = c.charCodeAt(0);
-  for (const [imin, imax] of CJKINTERVALS) {
+  const n = Number(c.charCodeAt(0));
+  for (let [imin, imax] of CJKINTERVALS) {
+    imin = Number(imin);
+    imax = Number(imax);
     if (n >= imin && n <= imax) return true;
   }
   return false;

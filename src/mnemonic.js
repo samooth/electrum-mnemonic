@@ -1,10 +1,32 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
+exports.validateMnemonic =
+  exports.mnemonicToSeed =
+  exports.mnemonicToSeedSync =
+  exports.generateMnemonic =
+  exports.PREFIXES =
+  exports.words =
+    void 0;
 const randombytes = require('randombytes');
 const createHmac = require('create-hmac');
 const pbkdf2 = require('pbkdf2');
 const ENGLISH = require('./wordlists/english.json');
+const SPANISH = require('./wordlists/es.json');
+//import * as PORTUGUESE from './wordlists/pt.json';
+const CHINESES = require('./wordlists/cns.json');
+const JAPANESE = require('./wordlists/jp.json');
 const encoding_1 = require('./encoding');
+const LANGS = {
+  en: ENGLISH,
+  es: SPANISH,
+  //pt:PORTUGUESE,
+  cn: CHINESES,
+  jp: JAPANESE,
+};
+function words() {
+  return LANGS;
+}
+exports.words = words;
 const INVALID_MNEMONIC_MESSAGE = 'Invalid Seed Version for mnemonic';
 exports.PREFIXES = {
   segwit: '100',
@@ -13,8 +35,8 @@ exports.PREFIXES = {
   '2fa-segwit': '102',
 };
 const DEFAULTGENOPTS = {
-  prefix: exports.PREFIXES.segwit,
-  strength: 132,
+  prefix: exports.PREFIXES.standard,
+  strength: 132, // 12 words x 2048 wordlist === 132 bits
   rng: randombytes,
   wordlist: ENGLISH,
 };
@@ -31,21 +53,21 @@ function generateMnemonic(opts) {
         `lower endless loop probability.\nprefix: ${prefix} ` +
         `(${prefix.length * 4} bits)\nstrength: ${strength}`,
     );
-  const wordBitLen = encoding_1.bitlen(wordlist.length);
+  const wordBitLen = (0, encoding_1.bitlen)(wordlist.length);
   const wordCount = Math.ceil(strength / wordBitLen);
   const byteCount = Math.ceil((wordCount * wordBitLen) / 8);
   let result = '';
   do {
     const bytes = rng(byteCount);
-    encoding_1.maskBytes(bytes, strength);
-    result = encoding_1.encode(bytes, wordlist);
+    (0, encoding_1.maskBytes)(bytes, strength);
+    result = (0, encoding_1.encode)(bytes, wordlist);
   } while (!prefixMatches(result, [prefix])[0]);
   return result;
 }
 exports.generateMnemonic = generateMnemonic;
 const DEFAULTOPTS = {
   passphrase: '',
-  prefix: exports.PREFIXES.segwit,
+  prefix: exports.PREFIXES.standard,
   skipCheck: false,
 };
 function mnemonicToSeedSync(mnemonic, opts) {
@@ -57,8 +79,8 @@ function mnemonicToSeedSync(mnemonic, opts) {
   validatePrefixFormat(prefix);
   if (!skipCheck) checkPrefix(mnemonic, [prefix]);
   return pbkdf2.pbkdf2Sync(
-    encoding_1.normalizeText(mnemonic),
-    'electrum' + encoding_1.normalizeText(passphrase),
+    (0, encoding_1.normalizeText)(mnemonic),
+    'electrum' + (0, encoding_1.normalizeText)(passphrase),
     2048,
     64,
     'sha512',
@@ -75,8 +97,8 @@ async function mnemonicToSeed(mnemonic, opts) {
   if (!skipCheck) checkPrefix(mnemonic, [prefix]);
   return new Promise((resolve, reject) => {
     pbkdf2.pbkdf2(
-      encoding_1.normalizeText(mnemonic),
-      'electrum' + encoding_1.normalizeText(passphrase),
+      (0, encoding_1.normalizeText)(mnemonic),
+      'electrum' + (0, encoding_1.normalizeText)(passphrase),
       2048,
       64,
       'sha512',
@@ -96,7 +118,12 @@ function validateMnemonic(mnemonic, prefix) {
     return true;
   } catch (e) {
     /* istanbul ignore else  */
-    if (e.message === INVALID_MNEMONIC_MESSAGE) {
+    if (
+      e &&
+      e.hasOwnProperty('message') &&
+      (e === null || e === void 0 ? void 0 : e.message) ===
+        INVALID_MNEMONIC_MESSAGE
+    ) {
       return false;
     }
     /* istanbul ignore next */
@@ -117,7 +144,7 @@ function checkPrefix(mn, validPrefixes) {
 }
 function prefixMatches(phrase, prefixes) {
   const hmac = createHmac('sha512', 'Seed version');
-  hmac.update(encoding_1.normalizeText(phrase));
+  hmac.update((0, encoding_1.normalizeText)(phrase));
   const hx = hmac.digest('hex');
   return prefixes.map((prefix) => hx.startsWith(prefix.toLowerCase()));
 }

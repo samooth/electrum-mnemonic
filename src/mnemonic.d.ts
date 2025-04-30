@@ -1,4 +1,5 @@
 /// <reference types="node" />
+export declare function words(): Object;
 export declare const PREFIXES: {
     segwit: string;
     standard: string;

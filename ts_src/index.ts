@@ -4,4 +4,5 @@ export {
   mnemonicToSeedSync,
   validateMnemonic,
   PREFIXES,
+  words
 } from './mnemonic';

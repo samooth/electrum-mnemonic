@@ -1,5 +1,13 @@
 import * as ENGLISH from './wordlists/english.json';
+import * as SPANISH from './wordlists/es.json';
+import * as PORTUGUESE from './wordlists/pt.json';
+import * as CHINESES from './wordlists/cns.json';
+import * as JAPANESE from './wordlists/jp.json';
 
+const LANGS = { en:ENGLISH, es:SPANISH, pt:PORTUGUESE, cn:CHINESES, jp:JAPANESE }
+export function words ():Object{
+  return LANGS
+}
 // Note: this cuts off extra bits from data
 // A 2048 word list is 11 bits per word, so you should pass in a
 // 17 byte Buffer, and the most significant 4 bits are thrown away
@@ -80,8 +88,10 @@ function lpad(str: string, pad: string, len: number): string {
 }
 
 function isCJK(c: string): boolean {
-  const n = c.charCodeAt(0);
-  for (const [imin, imax] of CJKINTERVALS) {
+  const n = Number(c.charCodeAt(0));
+  for (let [imin, imax] of CJKINTERVALS) {
+    imin =Number(imin)
+    imax=Number(imax)
     if (n >= imin && n <= imax) return true;
   }
   return false;
