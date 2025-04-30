@@ -1,32 +1,30 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.validateMnemonic =
-  exports.mnemonicToSeed =
-  exports.mnemonicToSeedSync =
-  exports.generateMnemonic =
-  exports.PREFIXES =
-  exports.words =
-    void 0;
+exports.PREFIXES = void 0;
+exports.words = words;
+exports.generateMnemonic = generateMnemonic;
+exports.mnemonicToSeedSync = mnemonicToSeedSync;
+exports.mnemonicToSeed = mnemonicToSeed;
+exports.validateMnemonic = validateMnemonic;
 const randombytes = require('randombytes');
 const createHmac = require('create-hmac');
 const pbkdf2 = require('pbkdf2');
 const ENGLISH = require('./wordlists/english.json');
 const SPANISH = require('./wordlists/es.json');
-//import * as PORTUGUESE from './wordlists/pt.json';
+const PORTUGUESE = require('./wordlists/pt.json');
 const CHINESES = require('./wordlists/cns.json');
 const JAPANESE = require('./wordlists/jp.json');
 const encoding_1 = require('./encoding');
 const LANGS = {
   en: ENGLISH,
   es: SPANISH,
-  //pt:PORTUGUESE,
+  pt: PORTUGUESE,
   cn: CHINESES,
   jp: JAPANESE,
 };
 function words() {
   return LANGS;
 }
-exports.words = words;
 const INVALID_MNEMONIC_MESSAGE = 'Invalid Seed Version for mnemonic';
 exports.PREFIXES = {
   segwit: '100',
@@ -64,7 +62,6 @@ function generateMnemonic(opts) {
   } while (!prefixMatches(result, [prefix])[0]);
   return result;
 }
-exports.generateMnemonic = generateMnemonic;
 const DEFAULTOPTS = {
   passphrase: '',
   prefix: exports.PREFIXES.standard,
@@ -86,7 +83,6 @@ function mnemonicToSeedSync(mnemonic, opts) {
     'sha512',
   );
 }
-exports.mnemonicToSeedSync = mnemonicToSeedSync;
 async function mnemonicToSeed(mnemonic, opts) {
   const { passphrase, prefix, skipCheck } = Object.assign(
     {},
@@ -110,7 +106,6 @@ async function mnemonicToSeed(mnemonic, opts) {
     );
   });
 }
-exports.mnemonicToSeed = mnemonicToSeed;
 function validateMnemonic(mnemonic, prefix) {
   validatePrefixFormat(prefix);
   try {
@@ -130,7 +125,6 @@ function validateMnemonic(mnemonic, prefix) {
     throw e;
   }
 }
-exports.validateMnemonic = validateMnemonic;
 function matchesAnyPrefix(mnemonic, validPrefixes) {
   return prefixMatches(mnemonic, validPrefixes).some((v) => v);
 }

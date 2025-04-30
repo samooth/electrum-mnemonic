@@ -1,12 +1,11 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.maskBytes =
-  exports.normalizeText =
-  exports.bitlen =
-  exports.decode =
-  exports.encode =
-  exports.words =
-    void 0;
+exports.words = words;
+exports.encode = encode;
+exports.decode = decode;
+exports.bitlen = bitlen;
+exports.normalizeText = normalizeText;
+exports.maskBytes = maskBytes;
 const ENGLISH = require('./wordlists/english.json');
 const SPANISH = require('./wordlists/es.json');
 const PORTUGUESE = require('./wordlists/pt.json');
@@ -22,7 +21,6 @@ const LANGS = {
 function words() {
   return LANGS;
 }
-exports.words = words;
 // Note: this cuts off extra bits from data
 // A 2048 word list is 11 bits per word, so you should pass in a
 // 17 byte Buffer, and the most significant 4 bits are thrown away
@@ -39,7 +37,6 @@ function encode(data, wordlist = ENGLISH) {
   }
   return result.join(' ');
 }
-exports.encode = encode;
 function decode(mnemonic, wordlist = ENGLISH) {
   const wordBitLen = bitlen(wordlist.length);
   const binStr = mnemonic
@@ -61,11 +58,9 @@ function decode(mnemonic, wordlist = ENGLISH) {
   }
   return result;
 }
-exports.decode = decode;
 function bitlen(num) {
   return Math.ceil(Math.log2(num));
 }
-exports.bitlen = bitlen;
 function normalizeText(str) {
   // 1. normalize
   str = str.normalize('NFKD');
@@ -79,7 +74,6 @@ function normalizeText(str) {
   // 5. remove whitespaces between CJK
   return removeCJKSpaces(str);
 }
-exports.normalizeText = normalizeText;
 // Only use when bytes.length * 8 >= bits
 function maskBytes(bytes, bits) {
   const skipByteCount = Math.floor(bits / 8);
@@ -89,7 +83,6 @@ function maskBytes(bytes, bits) {
     if (lastByteMask) lastByteMask = 0;
   }
 }
-exports.maskBytes = maskBytes;
 function bufferToBin(data) {
   return Array.from(data)
     .map((n) => lpad(n.toString(2), '0', 8))

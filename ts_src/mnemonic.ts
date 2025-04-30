@@ -3,16 +3,20 @@ import * as createHmac from 'create-hmac';
 import * as pbkdf2 from 'pbkdf2';
 import * as ENGLISH from './wordlists/english.json';
 import * as SPANISH from './wordlists/es.json';
-//import * as PORTUGUESE from './wordlists/pt.json';
+import * as PORTUGUESE from './wordlists/pt.json';
 import * as CHINESES from './wordlists/cns.json';
 import * as JAPANESE from './wordlists/jp.json';
 import { bitlen, encode, maskBytes, normalizeText } from './encoding';
 
-const LANGS = { en:ENGLISH, es:SPANISH, 
-  //pt:PORTUGUESE,
-     cn:CHINESES, jp:JAPANESE }
-export function words ():Object{
-  return LANGS
+const LANGS = {
+  en: ENGLISH,
+  es: SPANISH,
+  pt: PORTUGUESE,
+  cn: CHINESES,
+  jp: JAPANESE,
+};
+export function words(): Object {
+  return LANGS;
 }
 
 const INVALID_MNEMONIC_MESSAGE = 'Invalid Seed Version for mnemonic';
@@ -123,9 +127,13 @@ export function validateMnemonic(mnemonic: string, prefix: string): boolean {
   try {
     checkPrefix(mnemonic, [prefix]);
     return true;
-  } catch (e:any) {
+  } catch (e: any) {
     /* istanbul ignore else  */
-    if (e && e.hasOwnProperty("message") && e?.message === INVALID_MNEMONIC_MESSAGE) {
+    if (
+      e &&
+      e.hasOwnProperty('message') &&
+      e?.message === INVALID_MNEMONIC_MESSAGE
+    ) {
       return false;
     }
     /* istanbul ignore next */
