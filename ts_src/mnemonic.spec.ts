@@ -6,7 +6,10 @@ import {
   PREFIXES,
 } from './mnemonic';
 import * as bitcoin from 'bitcoinjs-lib';
-
+import BIP32Factory from 'bip32';
+import * as ecc from 'tiny-secp256k1';
+import * as b4a from 'b4a';
+const bip32 = BIP32Factory(ecc);
 describe(`mnemonic`, () => {
   let freshMnemonic1: string;
   let freshMnemonic2: string;
@@ -70,9 +73,10 @@ describe(`mnemonic`, () => {
     expect(validateMnemonic(phrase, PREFIXES.segwit)).toEqual(true);
     expect(
       bitcoin.payments.p2wpkh({
-        pubkey: bitcoin.bip32
-          .fromSeed(mnemonicToSeedSync(phrase))
-          .derivePath("m/0'/0/0").publicKey,
+        pubkey: b4a.from(
+          bip32.fromSeed(mnemonicToSeedSync(phrase)).derivePath("m/0'/0/0")
+            .publicKey,
+        ) as Buffer<ArrayBufferLike> | undefined,
       }).address,
     ).toEqual(firstAddress);
 
@@ -84,9 +88,13 @@ describe(`mnemonic`, () => {
     expect(validateMnemonic(phrase2, PREFIXES.standard)).toEqual(true);
     expect(
       bitcoin.payments.p2pkh({
-        pubkey: bitcoin.bip32
-          .fromSeed(mnemonicToSeedSync(phrase2, { prefix: PREFIXES.standard }))
-          .derivePath('m/0/0').publicKey,
+        pubkey: b4a.from(
+          bip32
+            .fromSeed(
+              mnemonicToSeedSync(phrase2, { prefix: PREFIXES.standard }),
+            )
+            .derivePath('m/0/0').publicKey,
+        ) as Buffer<ArrayBufferLike> | undefined,
       }).address,
     ).toEqual(firstAddress2);
   });

@@ -12,6 +12,7 @@ describe('index', () => {
       'mnemonicToSeed',
       'mnemonicToSeedSync',
       'validateMnemonic',
+      'words',
     ]);
   });
 });

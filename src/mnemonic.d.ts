@@ -1,4 +1,4 @@
-export declare function words(): Object;
+export declare function words(): Record<string, any>;
 export declare const PREFIXES: {
     segwit: string;
     standard: string;

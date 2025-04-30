@@ -15,7 +15,7 @@ const LANGS = {
   cn: CHINESES,
   jp: JAPANESE,
 };
-export function words(): Object {
+export function words(): Record<string, any> {
   return LANGS;
 }
 
